@@ -3,6 +3,8 @@ import os
 from datetime import datetime
 from django.shortcuts import render
 
+from catalog.models import Product
+
 
 def index(request):
     return render(request, 'catalog/index.html')
@@ -22,3 +24,13 @@ def contacts(request):
             data.writerow({'Date': datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 'Name': name, 'Phone': phone,
                            'Message': message})
     return render(request, 'catalog/contacts.html')
+
+
+def product_detail(request, pk):
+    try:
+        product = Product.objects.get(pk=pk)
+    except Product.DoesNotExist:
+        return render(request, 'catalog/contacts.html')
+
+    context = {'product': product}
+    return render(request, 'product_detail.html', context)
