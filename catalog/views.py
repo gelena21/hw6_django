@@ -27,10 +27,12 @@ def contacts(request):
 
 
 def product_detail(request, pk):
-    try:
-        product = Product.objects.get(pk=pk)
-    except Product.DoesNotExist:
-        return render(request, 'catalog/contacts.html')
+    context = {'object': Product.objects.get(pk=pk)}
 
-    context = {'product': product}
-    return render(request, 'product_detail.html', context)
+    return render(request, 'catalog/product_detail.html', context)
+
+
+def product_list(request):
+    context = {'object_list': Product.objects.all()}
+
+    return render(request, 'catalog/product_list.html', context)
