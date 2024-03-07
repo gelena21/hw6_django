@@ -2,6 +2,8 @@ import csv
 import os
 from datetime import datetime
 from django.shortcuts import render
+from django.urls import reverse_lazy
+from django.views.generic import DetailView, CreateView, UpdateView, ListView, DeleteView
 
 from catalog.models import Product
 
@@ -36,3 +38,29 @@ def product_list(request):
     context = {'object_list': Product.objects.all()}
 
     return render(request, 'catalog/product_list.html', context)
+
+
+class ProductView(ListView):
+    model = Product
+
+
+class ProductDetailView(DetailView):
+    model = Product
+
+
+class ProductCreateView(CreateView):
+    model = Product
+    fields = ('product_name', 'description', 'price', 'preview', 'category', 'created_at', 'updated_at', 'avatar')
+    success_url = reverse_lazy('catalog:index')
+
+
+class ProductUpdateView(UpdateView):
+    model = Product
+    fields = ('product_name', 'description', 'price', 'preview', 'category', 'created_at', 'updated_at', 'avatar')
+    success_url = reverse_lazy('catalog:index')
+
+
+class ProductDeleteView(DeleteView):
+    model = Product
+    success_url = reverse_lazy('catalog:index')
+
