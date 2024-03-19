@@ -18,8 +18,8 @@ class ProductForm(StyleFormMixin, forms.ModelForm):
     class Meta:
         model = Product
 
-    stop_words = ['казино', 'розыгрыш', 'ставки', 'выиграть', 'дешево',
-                  'бесплатно', 'моментально']
+    stop_words = ['казино', 'криптовалюта', 'крипта', 'биржа', 'дешево',
+                  'бесплатно', 'обман', 'полиция', 'радар']
 
     def clean_nomination(self):
         nomination = self.cleaned_data['nomination']
