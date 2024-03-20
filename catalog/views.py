@@ -53,7 +53,6 @@ class ProductDetailView(DetailView):
 class ProductCreateView(CreateView):
     model = Product
     form_class = ProductForm
-    fields = ('product_name', 'description', 'price', 'preview', 'category', 'created_at', 'updated_at', 'avatar')
     success_url = reverse_lazy('catalog:index')
 
     def form_valid(self, form):
