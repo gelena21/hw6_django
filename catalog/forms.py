@@ -18,7 +18,7 @@ class ProductForm(StyleFormMixin, forms.ModelForm):
     class Meta:
         model = Product
         fields = ('product_name', 'description', 'price', 'preview',
-                  'category', 'created_at', 'updated_at', 'avatar')
+                  'category')
     stop_words = ['казино', 'криптовалюта', 'крипта', 'биржа', 'дешево',
                   'бесплатно', 'обман', 'полиция', 'радар']
 
