@@ -45,6 +45,12 @@ def product_list(request):
 class ProductView(ListView):
     model = Product
 
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        for product in context['object_list']:
+            product.active_version = product.version_set.filter(is_current=True).first()
+        return context
+
 
 class ProductDetailView(DetailView):
     model = Product

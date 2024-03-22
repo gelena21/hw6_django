@@ -13,6 +13,14 @@
                 </h2>
             </div>
             <div class="card-body">
+                <h1 class="card-title pricing-card-title">{{ object.price | floatformat:'2' }} ₴</h1>
+    <p>{{ object.description | truncatechars:100 }}</p>
+    <a href="/view/{{object.pk}}">
+        <button type="button" class="btn btn-lg btn-block btn-outline-primary">Подробности с фото
+        </button>
+    </a>
+    <p>Активная версия: {{ object.active_version.number }}</p>
+</div>
 
                 {{ form.as_p }}
                 <button type="submit" class="btn btn-success">

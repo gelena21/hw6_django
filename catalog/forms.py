@@ -22,8 +22,8 @@ class ProductForm(StyleFormMixin, forms.ModelForm):
     stop_words = ['казино', 'криптовалюта', 'крипта', 'биржа', 'дешево',
                   'бесплатно', 'обман', 'полиция', 'радар']
 
-    def clean_nomination(self):
-        nomination = self.cleaned_data['nomination']
+    def clean_product_name(self):
+        nomination = self.cleaned_data['product_name']
         for word in self.stop_words:
             if word in nomination:
                 raise forms.ValidationError(f'Выберите другой вариант'
