@@ -1,5 +1,7 @@
 from django.contrib.auth import login
 from django.contrib.auth.tokens import default_token_generator
+from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib.sites.models import Site
 
 from django.core.mail import send_mail
 from django.shortcuts import render, redirect
@@ -8,10 +10,10 @@ from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.views import View
 from django.views.generic import CreateView, TemplateView
-from django.contrib.auth.views import LoginView as BaseLoginView
+from django.contrib.auth.views import LoginView as BaseLoginView, PasswordResetView
 from django.contrib.auth.views import LogoutView as BaseLogoutView
 from config import settings
-from users.forms import UserForm
+from users.forms import UserForm, UserForgotPasswordForm
 from users.models import User
 
 
@@ -101,4 +103,25 @@ class EmailConfirmationFailedView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Ваш электронный адрес не активирован'
+        return context
+
+
+class UserForgotPasswordView(SuccessMessageMixin, PasswordResetView):
+    """
+     сброс пароля
+     """
+
+    form_class = UserForgotPasswordForm
+    template_name = "users/user_password_reset.html"
+    success_url = reverse_lazy("catalog:index")
+    success_message = (
+        "инструкция по" 
+        "восстановлению пароля отправлена на ваш email"
+    )
+    subject_template_name = "users/password_subject_reset_mail.txt"
+    email_template_name = "users/password_reset_mail.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Запрос на восстановление пароля"
         return context
