@@ -1,8 +1,6 @@
 from django.contrib.auth import login
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.messages.views import SuccessMessageMixin
-from django.contrib.sites.models import Site
-
 from django.core.mail import send_mail
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
@@ -10,7 +8,7 @@ from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.views import View
 from django.views.generic import CreateView, TemplateView
-from django.contrib.auth.views import LoginView as BaseLoginView, PasswordResetView
+from django.contrib.auth.views import LoginView as BaseLoginView, PasswordResetView, PasswordResetConfirmView
 from django.contrib.auth.views import LogoutView as BaseLogoutView
 from config import settings
 from users.forms import UserForm, UserForgotPasswordForm
@@ -48,7 +46,7 @@ class RegisterView(CreateView):
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         activation_url = reverse_lazy('users:email_confirmed',
                                       kwargs={'uidb64': uid, 'token': token})
-        current_site = Site.objects.get_current().domain
+        current_site = self.request.get_host()
         send_mail(
             subject='Подтвердите свой электронный адрес',
             message=f'Пожалуйста, перейдите по следующей ссылке, '
@@ -124,4 +122,24 @@ class UserForgotPasswordView(SuccessMessageMixin, PasswordResetView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = "Запрос на восстановление пароля"
+        return context
+
+
+class UserSetNewPasswordForm:
+    pass
+
+
+class UserPasswordResetConfirmView(SuccessMessageMixin,
+                                   PasswordResetConfirmView):
+    """Представление установки нового пароля"""
+
+    form_class = UserSetNewPasswordForm
+    template_name = "users/user_password_set_new.html"
+    success_url = reverse_lazy("catalog:index")
+    success_message = ("Пароль успешно изменен. "
+                       "Можете авторизоваться на сайте.")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Установить новый пароль"
         return context
