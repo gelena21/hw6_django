@@ -10,7 +10,7 @@ from django.views import View
 from django.views.generic import CreateView, TemplateView
 from django.contrib.auth.views import LoginView as BaseLoginView, PasswordResetView, PasswordResetConfirmView
 from django.contrib.auth.views import LogoutView as BaseLogoutView
-from config import settings
+from django.conf import settings
 from users.forms import UserForm, UserForgotPasswordForm
 from users.models import User
 
@@ -44,7 +44,7 @@ class RegisterView(CreateView):
 
         token = default_token_generator.make_token(user)
         uid = urlsafe_base64_encode(force_bytes(user.pk))
-        activation_url = reverse_lazy('users:email_confirmed',
+        activation_url = reverse_lazy('users:confirm_email',
                                       kwargs={'uidb64': uid, 'token': token})
         current_site = self.request.get_host()
         send_mail(
