@@ -116,7 +116,7 @@ class UserForgotPasswordView(SuccessMessageMixin, PasswordResetView):
         "инструкция по" 
         "восстановлению пароля отправлена на ваш email"
     )
-    subject_template_name = "users/password_subject_reset_mail.txt"
+    subject_template_name = "users/password_subject_reset_mail.html"
     email_template_name = "users/password_reset_mail.html"
 
     def get_context_data(self, **kwargs):
