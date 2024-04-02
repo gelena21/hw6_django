@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.contrib.contenttypes.models import ContentType
 from config import settings
 
 # Create your models here.
@@ -29,10 +29,19 @@ class Product(models.Model):
     updated_at = models.DateField(auto_now=True, verbose_name='Дата последнего изменения')
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE, verbose_name="автор")
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(args, kwargs)
+        self.user = None
+
     def __str__(self):
         return f'{self.product_name} {self.description} {self.category}'
 
     class Meta:
+        permissions = [
+            ("set_publication", "Can publish products"),
+            ("set_category", "Can change categories"),
+            ("set_description", "Can change description"),
+        ]
         verbose_name = ("Товар")
         verbose_name_plural = ("Товары")
 

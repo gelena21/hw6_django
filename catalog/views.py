@@ -3,14 +3,15 @@ import os
 from datetime import datetime
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import Http404
 from django.shortcuts import render
 from django.urls import reverse_lazy, reverse
 from django.views.generic import DetailView, CreateView, UpdateView, ListView, DeleteView
 
 from catalog.models import Product, Version
-from catalog.forms import ProductForm, VersionForm
+from catalog.forms import ProductForm, VersionForm, ProductModeratorForm
 from django.forms import inlineformset_factory
-
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 
 def index(request):
     return render(request, 'catalog/index.html')
@@ -44,7 +45,7 @@ def product_list(request):
     return render(request, 'catalog/product_list.html', context)
 
 
-class ProductView(ListView):
+class ProductView(LoginRequiredMixin, ListView):
     model = Product
 
     def get_context_data(self, *args, **kwargs):
@@ -75,7 +76,38 @@ class ProductUpdateView(LoginRequiredMixin, UpdateView):
     model = Product
     #fields = ('product_name', 'description', 'price', 'preview', 'category', 'created_at', 'updated_at', 'avatar')
     success_url = reverse_lazy('catalog:index')
+    permission_required = "catalog.change_product"
     form_class = ProductForm
+
+    def get_form_class(self):
+        if self.request.user.is_staff:
+            return ProductModeratorForm
+        else:
+            return ProductForm
+
+    def test_func(self):
+        user = self.request.user
+        instance: Product = self.get_object()
+        custom_perms: tuple = (
+            'catalog.set_publication',
+            'catalog.set_category',
+            'catalog.set_description',
+        )
+
+        if user == instance.user:
+            return True
+        elif user.groups.filter(name='moderator') and user.has_perms(custom_perms):
+            return True
+
+        return self.handle_no_permission()
+
+    def get_object(self, queryset=None):
+        self.object = super().get_object(queryset)
+
+        if self.object.author != self.request.user and not self.request.user.is_staff:
+            raise Http404("Доступа нет")
+
+        return self.object
 
     def get_success_url(self, *args, **kwargs):
         return reverse("catalog:update_product", args=[self.get_object().pk])

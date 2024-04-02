@@ -47,3 +47,9 @@ class VersionForm(StyleFormMixin, forms.ModelForm):
 
         name = forms.CharField(widget=forms.TextInput(
             attrs={"class": "myfield"}))
+
+
+class ProductModeratorForm(StyleFormMixin, forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = ('description', 'category', 'is_published', )
