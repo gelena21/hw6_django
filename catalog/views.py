@@ -1,17 +1,19 @@
 import csv
 import os
 from datetime import datetime
-
+from django.core.cache import cache
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404
 from django.shortcuts import render
 from django.urls import reverse_lazy, reverse
+from django.views import View
 from django.views.generic import DetailView, CreateView, UpdateView, ListView, DeleteView
 
-from catalog.models import Product, Version
+from catalog.models import Product, Version, Category
 from catalog.forms import ProductForm, VersionForm, ProductModeratorForm
 from django.forms import inlineformset_factory
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
+
 
 def index(request):
     return render(request, 'catalog/index.html')
@@ -74,7 +76,7 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
 
 class ProductUpdateView(LoginRequiredMixin, UpdateView):
     model = Product
-    #fields = ('product_name', 'description', 'price', 'preview', 'category', 'created_at', 'updated_at', 'avatar')
+    # fields = ('product_name', 'description', 'price', 'preview', 'category', 'created_at', 'updated_at', 'avatar')
     success_url = reverse_lazy('catalog:index')
     permission_required = "catalog.change_product"
     form_class = ProductForm
@@ -140,3 +142,39 @@ class ProductUpdateView(LoginRequiredMixin, UpdateView):
 class ProductDeleteView(LoginRequiredMixin, DeleteView):
     model = Product
     success_url = reverse_lazy('catalog:index')
+
+
+class ContactView(View):
+    template_name = "catalog/contacts.html"
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name)
+
+    def post(self, request, *args, **kwargs):
+        return render(request, "catalog/not_available.html")
+
+
+def categories(request):
+    key = 'category_list'
+    category_list = cache.get(key)
+
+    if category_list is None:
+        category_list = Category.objects.all()
+        cache.set(key, category_list)
+
+    context = {
+        'object_list': category_list,
+        'title': "Все категории продуктов"
+    }
+
+    return render(request, 'catalog/categories.html', context)
+
+
+def category_products(request, pk):
+    category_item = Category.objects.get(pk=pk)
+    context = {
+        'object_list': Product.objects.filter(category_id=pk),
+        'title': f'Продкуты категории {category_item.nomination}'
+    }
+
+    return render(request, 'catalog/product_list.html', context)

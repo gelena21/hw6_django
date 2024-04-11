@@ -1,5 +1,4 @@
-from django.conf import settings
-from django.conf.urls.static import static
+from django.views.decorators.cache import never_cache
 from django.urls import path
 
 from blog.views import (NoteListView, NoteDetailView, NoteCreateView,
@@ -9,7 +8,7 @@ app_name = 'blog'
 
 urlpatterns = [
                   path('blog/', NoteListView.as_view(), name='list'),
-                  path('blog/create/', NoteCreateView.as_view(),
+                  path('blog/create/', never_cache(NoteCreateView.as_view()),
                        name='create'),
                   path('blog/view/<int:pk>/', NoteDetailView.as_view(),
                        name='detail_view'),

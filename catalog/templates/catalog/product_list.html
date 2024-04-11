@@ -11,6 +11,12 @@
 <div class="container">
     <div class="row text-center">
 
+        <div class="col-12 mb-5">
+            <a class="btn btn-outline-primary" href="{% url 'catalog:categories' %}">
+                Категории продуктов
+            </a>
+        </div>
+
         {% for object in object_list %}
 
         <div class="col-3">

@@ -9,11 +9,11 @@
     {{ form.as_p }}
 
     {% if object %}
-    <button type="submit" class="btn btn-success">Сохранить измененмя</button>
+    <button type="submit" class="btn btn-success">{{ title }}</button>
 
     {% else %}
 
-    <button type="submit" class="btn btn-success">Создать</button>
+    <button type="submit" class="btn btn-success">{{ title }}</button>
 
 
     {% endif %}

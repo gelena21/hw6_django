@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from config import settings
+from django.conf import settings
 
 # Create your models here.
 
